@@ -35,6 +35,10 @@ public final class Main {
 		}
 		WritableResource outputResource = new FileSystemResource(args[2]);
 		if (outputResource.exists()) {
+			if (outputResource.equals(inputResource)) {
+				throw new IllegalArgumentException("输入文件与输出文件不能相同");
+			}
+
 			System.out.print("输出文件已存在，是否覆盖？");
 			char answer = (char) System.in.read();
 			if (answer != 'Y' && answer != 'y') {

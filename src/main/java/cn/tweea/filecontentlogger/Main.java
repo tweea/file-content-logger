@@ -6,6 +6,7 @@ package cn.tweea.filecontentlogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -45,6 +46,7 @@ public final class Main {
 				return;
 			}
 		}
+		WritableResource duplicateResource = new FileSystemResource(args[2] + ".duplicate");
 
 		Map<String, FileContent> fileContents;
 		if (inputResource == null) {
@@ -52,6 +54,26 @@ public final class Main {
 		} else {
 			fileContents = DataFiles.readFileContentLog(inputResource);
 		}
-		DataFiles.writeFileContentLog(fileContents, outputResource);
+		Map<String, List<String>> duplicateFiles = new TreeMap<>();
+		loadFileContent(fileBase, fileContents, duplicateFiles);
+		if (!fileContents.isEmpty()) {
+			DataFiles.writeFileContentLog(fileContents, outputResource);
+		}
+		if (!duplicateFiles.isEmpty()) {
+			DataFiles.writeDuplicateFiles(duplicateFiles, duplicateResource);
+		}
+	}
+
+	private static void loadFileContent(File fileBase, Map<String, FileContent> fileContents, Map<String, List<String>> duplicateFiles)
+		throws IOException {
+		if (fileBase.isFile()) {
+			File file = fileBase.getCanonicalFile();
+			System.out.println(file);
+		} else if (fileBase.isDirectory()) {
+			File[] files = fileBase.listFiles();
+			for (File file : files) {
+				loadFileContent(file, fileContents, duplicateFiles);
+			}
+		}
 	}
 }

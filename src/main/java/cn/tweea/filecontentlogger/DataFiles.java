@@ -53,4 +53,18 @@ public class DataFiles {
 
 		return fileContents;
 	}
+
+	public static void writeDuplicateFiles(Map<String, List<String>> duplicateFiles, WritableResource target)
+		throws IOException {
+		try (PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(target.getOutputStream(), StandardCharsets.UTF_8)))) {
+			for (Map.Entry<String, List<String>> duplicateFileEntry : duplicateFiles.entrySet()) {
+				writer.println(duplicateFileEntry.getKey());
+				for (String name : duplicateFileEntry.getValue()) {
+					writer.print("  ");
+					writer.println(name);
+				}
+			}
+			writer.flush();
+		}
+	}
 }

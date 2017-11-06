@@ -5,12 +5,15 @@
 package cn.tweea.filecontentlogger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
@@ -106,7 +109,10 @@ public final class Main {
 		}
 	}
 
-	private static String hashFileContent(File file) {
-		return "abc";
+	private static String hashFileContent(File file)
+		throws IOException {
+		try (InputStream is = new FileInputStream(file)) {
+			return DigestUtils.sha512Hex(is);
+		}
 	}
 }

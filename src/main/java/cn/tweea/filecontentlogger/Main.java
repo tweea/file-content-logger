@@ -6,6 +6,7 @@ package cn.tweea.filecontentlogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,6 +14,8 @@ import java.util.TreeMap;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
+
+import com.google.common.base.MoreObjects;
 
 public final class Main {
 	public static void main(String[] args)
@@ -69,11 +72,41 @@ public final class Main {
 		if (fileBase.isFile()) {
 			File file = fileBase.getCanonicalFile();
 			System.out.println(file);
+
+			String hash = hashFileContent(file);
+			long length = file.length();
+			String name = file.getName();
+			String path = file.getPath();
+
+			FileContent fileContent = fileContents.get(hash);
+			if (fileContent == null) {
+				fileContent = new FileContent();
+				fileContent.setHash(hash);
+				fileContent.setLength(length);
+				fileContent.setName(name);
+				fileContent.setPath(path);
+				fileContents.put(hash, fileContent);
+			} else {
+				List<String> duplicateFilenames = duplicateFiles.get(hash);
+				if (duplicateFilenames == null) {
+					duplicateFilenames = new ArrayList<>();
+					duplicateFilenames.add(MoreObjects.firstNonNull(fileContent.getPath(), fileContent.getName()));
+					duplicateFiles.put(hash, duplicateFilenames);
+				}
+				fileContent.setLength(length);
+				fileContent.setName(name);
+				fileContent.setPath(path);
+				duplicateFilenames.add(path);
+			}
 		} else if (fileBase.isDirectory()) {
 			File[] files = fileBase.listFiles();
 			for (File file : files) {
 				loadFileContent(file, fileContents, duplicateFiles);
 			}
 		}
+	}
+
+	private static String hashFileContent(File file) {
+		return "abc";
 	}
 }

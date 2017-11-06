@@ -14,6 +14,8 @@ public class FileContent {
 
 	private String name;
 
+	private String path;
+
 	public String getHash() {
 		return hash;
 	}
@@ -38,8 +40,17 @@ public class FileContent {
 		this.name = name;
 	}
 
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("hash", hash).append("length", length).append("name", name).toString();
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("hash", hash).append("length", length).append("name", name).append("path", path)
+			.toString();
 	}
 }

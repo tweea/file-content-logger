@@ -8,49 +8,49 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class FileContent {
-	private String hash;
+    private String hash;
 
-	private long length;
+    private long length;
 
-	private String name;
+    private String name;
 
-	private String path;
+    private String path;
 
-	public String getHash() {
-		return hash;
-	}
+    public String getHash() {
+        return hash;
+    }
 
-	public void setHash(String hash) {
-		this.hash = hash;
-	}
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
 
-	public long getLength() {
-		return length;
-	}
+    public long getLength() {
+        return length;
+    }
 
-	public void setLength(long length) {
-		this.length = length;
-	}
+    public void setLength(long length) {
+        this.length = length;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getPath() {
-		return path;
-	}
+    public String getPath() {
+        return path;
+    }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    public void setPath(String path) {
+        this.path = path;
+    }
 
-	@Override
-	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("hash", hash).append("length", length).append("name", name).append("path", path)
-			.toString();
-	}
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("hash", hash).append("length", length).append("name", name).append("path", path)
+            .toString();
+    }
 }

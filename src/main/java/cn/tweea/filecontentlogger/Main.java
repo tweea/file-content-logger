@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
@@ -27,20 +29,30 @@ public final class Main {
             throw new IllegalArgumentException("缺少参数");
         }
 
+        String inputResourceName = args[0];
+        String fileBaseName = args[1];
+        String outputResourceName = args[2];
+        boolean isDeleteDuplicate;
+        if (args.length >= 4) {
+            isDeleteDuplicate = BooleanUtils.toBoolean(args[3]);
+        } else {
+            isDeleteDuplicate = false;
+        }
+
         Resource inputResource;
-        if ("-".equals(args[0])) {
+        if ("-".equals(inputResourceName)) {
             inputResource = null;
         } else {
-            inputResource = new FileSystemResource(args[0]);
+            inputResource = new FileSystemResource(inputResourceName);
             if (!inputResource.exists()) {
                 throw new IllegalArgumentException("输入文件不存在");
             }
         }
-        File fileBase = new File(args[1]);
+        File fileBase = new File(fileBaseName);
         if (!fileBase.exists()) {
             throw new IllegalArgumentException("数据目录/文件不存在");
         }
-        WritableResource outputResource = new FileSystemResource(args[2]);
+        WritableResource outputResource = new FileSystemResource(outputResourceName);
         if (outputResource.exists()) {
             if (outputResource.equals(inputResource)) {
                 throw new IllegalArgumentException("输入文件与输出文件不能相同");
@@ -52,7 +64,7 @@ public final class Main {
                 return;
             }
         }
-        WritableResource duplicateResource = new FileSystemResource(args[2] + ".duplicate");
+        WritableResource duplicateResource = new FileSystemResource(outputResourceName + ".duplicate");
 
         Map<String, FileContent> fileContents;
         if (inputResource == null) {
@@ -61,7 +73,7 @@ public final class Main {
             fileContents = DataFiles.readFileContentLog(inputResource);
         }
         Map<String, List<String>> duplicateFiles = new TreeMap<>();
-        loadFileContent(fileBase, fileContents, duplicateFiles);
+        loadFileContent(fileBase, fileContents, duplicateFiles, isDeleteDuplicate);
         if (!fileContents.isEmpty()) {
             DataFiles.writeFileContentLog(fileContents, outputResource);
         }
@@ -70,7 +82,8 @@ public final class Main {
         }
     }
 
-    private static void loadFileContent(File fileBase, Map<String, FileContent> fileContents, Map<String, List<String>> duplicateFiles)
+    private static void loadFileContent(File fileBase, Map<String, FileContent> fileContents, Map<String, List<String>> duplicateFiles,
+        boolean isDeleteDuplicate)
         throws IOException {
         if (fileBase.isFile()) {
             File file = fileBase.getCanonicalFile();
@@ -100,11 +113,15 @@ public final class Main {
                 fileContent.setName(name);
                 fileContent.setPath(path);
                 duplicateFilenames.add(path);
+
+                if (isDeleteDuplicate) {
+                    FileUtils.forceDelete(file);
+                }
             }
         } else if (fileBase.isDirectory()) {
             File[] files = fileBase.listFiles();
             for (File file : files) {
-                loadFileContent(file, fileContents, duplicateFiles);
+                loadFileContent(file, fileContents, duplicateFiles, isDeleteDuplicate);
             }
         }
     }

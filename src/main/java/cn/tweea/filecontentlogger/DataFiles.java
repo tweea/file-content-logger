@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.yaml.snakeyaml.Yaml;
@@ -31,7 +32,7 @@ public class DataFiles {
                 writer.print("  length: ");
                 writer.println(fileContent.getLength());
                 writer.print("  name: '");
-                writer.print(fileContent.getName());
+                writer.print(StringUtils.replace(fileContent.getName(), "'", "''"));
                 writer.println('\'');
             }
             writer.flush();

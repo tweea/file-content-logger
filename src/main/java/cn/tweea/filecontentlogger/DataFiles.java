@@ -16,10 +16,17 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 
 public class DataFiles {
-    private static Yaml YAML = new Yaml();
+    private static Yaml YAML;
+
+    static {
+        LoaderOptions loaderOptions = new LoaderOptions();
+        loaderOptions.setCodePointLimit(30 * 1024 * 1024);
+        YAML = new Yaml(loaderOptions);
+    }
 
     public static void writeFileContentLog(Map<String, FileContent> fileContents, WritableResource target)
         throws IOException {
